@@ -1,5 +1,5 @@
 
-import { Subject } from '../types.ts';
+import { Subject } from '../types.js';
 
 const API_URL = 'https://script.google.com/macros/s/AKfycby23phjhXwfM8N_5YTgQsKGehhPp7Tw3pa-KFHt1O0IWlKqmIUZv2lekltLhOe-OjeVMg/exec';
 

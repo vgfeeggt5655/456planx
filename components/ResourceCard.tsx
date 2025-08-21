@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { useNavigate } from 'https://esm.sh/react-router-dom';
-import { Resource, User } from '../types.ts';
-import { EditIcon, TrashIcon } from './Icons.tsx';
+import { Resource, User } from '../types.js';
+import { EditIcon, TrashIcon } from './Icons.js';
 
 interface ResourceCardProps {
   resource: Resource;

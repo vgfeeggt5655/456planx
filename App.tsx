@@ -1,15 +1,15 @@
 
 import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, Outlet } from 'https://esm.sh/react-router-dom';
-import Header from './components/Header.tsx';
-import HomePage from './pages/HomePage.tsx';
-import LoginPage from './pages/LoginPage.tsx';
-import SignupPage from './pages/SignupPage.tsx';
-import AdminDashboardPage from './pages/AdminDashboardPage.tsx';
-import WatchPage from './pages/WatchPage.tsx';
-import ProfilePage from './pages/ProfilePage.tsx';
-import ProtectedRoute from './components/ProtectedRoute.tsx';
-import { AuthProvider } from './contexts/AuthContext.tsx';
+import Header from './components/Header.js';
+import HomePage from './pages/HomePage.js';
+import LoginPage from './pages/LoginPage.js';
+import SignupPage from './pages/SignupPage.js';
+import AdminDashboardPage from './pages/AdminDashboardPage.js';
+import WatchPage from './pages/WatchPage.js';
+import ProfilePage from './pages/ProfilePage.js';
+import ProtectedRoute from './components/ProtectedRoute.js';
+import { AuthProvider } from './contexts/AuthContext.js';
 
 const ProtectedLayout: React.FC = () => (
   <div className="min-h-screen flex flex-col">

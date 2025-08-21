@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext.tsx';
-import { updateUser } from '../services/authService.ts';
-import Spinner from '../components/Spinner.tsx';
+import { useAuth } from '../contexts/AuthContext.js';
+import { updateUser } from '../services/authService.js';
+import Spinner from '../components/Spinner.js';
 
 const AVATARS = [
     'https://png.pngtree.com/png-vector/20250423/ourmid/pngtree-3d-cartoon-doctor-character-young-male-round-glasses-png-image_16046563.png',

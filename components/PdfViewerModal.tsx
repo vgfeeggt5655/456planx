@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { XIcon } from './Icons.tsx';
+import { XIcon } from './Icons.js';
 
 interface PdfViewerModalProps {
   isOpen: boolean;

@@ -1,15 +1,15 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'https://esm.sh/react-router-dom';
-import { getResources } from '../services/googleSheetService.ts';
-import { updateUser } from '../services/authService.ts';
-import { Resource } from '../types.ts';
-import Spinner from '../components/Spinner.tsx';
-import { DocumentIcon, BrainIcon, CloudDownloadIcon, CollectionIcon, SpeedIcon, ChevronDownIcon, CheckIcon } from '../components/Icons.tsx';
-import PdfViewerModal from '../components/PdfViewerModal.tsx';
-import MCQTestModal from '../components/MCQTestModal.tsx';
-import FlashcardModal from '../components/FlashcardModal.tsx';
-import { useAuth } from '../contexts/AuthContext.tsx';
+import { getResources } from '../services/googleSheetService.js';
+import { updateUser } from '../services/authService.js';
+import { Resource } from '../types.js';
+import Spinner from '../components/Spinner.js';
+import { DocumentIcon, BrainIcon, CloudDownloadIcon, CollectionIcon, SpeedIcon, ChevronDownIcon, CheckIcon } from '../components/Icons.js';
+import PdfViewerModal from '../components/PdfViewerModal.js';
+import MCQTestModal from '../components/MCQTestModal.js';
+import FlashcardModal from '../components/FlashcardModal.js';
+import { useAuth } from '../contexts/AuthContext.js';
 
 type WatchedProgress = { time: number; duration: number };
 
