@@ -1,19 +1,19 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Resource, User, Subject } from '../types';
+import { useAuth } from '../contexts/AuthContext.tsx';
+import { Resource, User, Subject } from '../types.ts';
 
-import * as resourceService from '../services/googleSheetService';
-import * as authService from '../services/authService';
-import * as subjectService from '../services/subjectService';
+import * as resourceService from '../services/googleSheetService.ts';
+import * as authService from '../services/authService.ts';
+import * as subjectService from '../services/subjectService.ts';
 
-import { generateImage } from '../services/geminiService';
-import { uploadFile } from '../services/archiveService';
-import Spinner from '../components/Spinner';
-import ConfirmDialog from '../components/ConfirmDialog';
-import ProgressBar from '../components/ProgressBar';
-import SubjectSelectionDialog from '../components/SubjectSelectionDialog';
-import { ChevronDownIcon, EditIcon, TrashIcon, PlusCircleIcon, UserGroupIcon, ClipboardListIcon, VideoIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from '../components/Icons';
+import { generateImage } from '../services/geminiService.ts';
+import { uploadFile } from '../services/archiveService.ts';
+import Spinner from '../components/Spinner.tsx';
+import ConfirmDialog from '../components/ConfirmDialog.tsx';
+import ProgressBar from '../components/ProgressBar.tsx';
+import SubjectSelectionDialog from '../components/SubjectSelectionDialog.tsx';
+import { ChevronDownIcon, EditIcon, TrashIcon, PlusCircleIcon, UserGroupIcon, ClipboardListIcon, VideoIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from '../components/Icons.tsx';
 
 
 type AdminTab = 'content' | 'users' | 'subjects';

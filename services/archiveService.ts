@@ -1,10 +1,11 @@
-// WARNING: Storing API keys in client-side code is highly insecure and exposes them to anyone
-// who inspects the app's source code. This is for demonstration purposes only, based on the
-// provided documentation and user request. In a production environment, file uploads and API
-// interactions with secret keys should always be handled by a secure backend server.
 
-const ACCESS_KEY = '0tbhVHzeM8sbXkw5';
-const SECRET_KEY = 'LWN6qMF3XXLw5ljq';
+// WARNING: API keys should not be stored in client-side code. They should be
+// accessed from environment variables provided by the deployment platform.
+// In a production environment, file uploads and API interactions with secret keys
+// should always be handled by a secure backend server.
+
+const ACCESS_KEY = process?.env?.ARCHIVE_ACCESS_KEY || '';
+const SECRET_KEY = process?.env?.ARCHIVE_SECRET_KEY || '';
 
 type MediaType = 'movies' | 'texts' | 'image';
 
@@ -28,6 +29,13 @@ export const uploadFile = (
     onProgress: (percent: number) => void
 ): Promise<string> => {
     return new Promise((resolve, reject) => {
+        if (!ACCESS_KEY || !SECRET_KEY) {
+            const errorMessage = "Archive service API keys are not configured. Please set ARCHIVE_ACCESS_KEY and ARCHIVE_SECRET_KEY environment variables.";
+            console.error(errorMessage);
+            reject(new Error(errorMessage));
+            return;
+        }
+
         const url = `https://s3.us.archive.org/${itemName}/${encodeURIComponent(file.name)}`;
         const mediaType = getMediaType(file);
 

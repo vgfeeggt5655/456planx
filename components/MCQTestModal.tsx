@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { MCQ, Resource } from '../types';
-import { generateMCQs } from '../services/geminiService';
-import Spinner from './Spinner';
-import { XIcon, CheckCircleIcon, XCircleIcon } from './Icons';
+import { MCQ, Resource } from '../types.ts';
+import { generateMCQs } from '../services/geminiService.ts';
+import Spinner from './Spinner.tsx';
+import { XIcon, CheckCircleIcon, XCircleIcon } from './Icons.tsx';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Set up the PDF.js worker. This is required for the library to work.

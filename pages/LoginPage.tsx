@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'https://esm.sh/react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import Spinner from '../components/Spinner';
+import { useAuth } from '../contexts/AuthContext.tsx';
+import Spinner from '../components/Spinner.tsx';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');

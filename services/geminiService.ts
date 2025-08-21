@@ -1,5 +1,6 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
-import { MCQ, Flashcard } from '../types';
+import { MCQ, Flashcard } from '../types.ts';
 
 // The 'if (!process.env.API_KEY)' check was removed as it crashed the app in browser environments.
 // Optional chaining is used here to safely access `process.env.API_KEY`. If it doesn't exist,

@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { jsPDF } from 'jspdf';
-import { Flashcard, Resource } from '../types';
-import { generateFlashcards } from '../services/geminiService';
-import Spinner from './Spinner';
-import { XIcon, RefreshIcon, ArrowLeftIcon, ArrowRightIcon, CloudDownloadIcon } from './Icons';
+import { Flashcard, Resource } from '../types.ts';
+import { generateFlashcards } from '../services/geminiService.ts';
+import Spinner from './Spinner.tsx';
+import { XIcon, RefreshIcon, ArrowLeftIcon, ArrowRightIcon, CloudDownloadIcon } from './Icons.tsx';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // PDF.js worker setup is required.

@@ -1,14 +1,15 @@
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'https://esm.sh/react-router-dom';
-import { getResources, deleteResource } from '../services/googleSheetService';
-import { getSubjects } from '../services/subjectService';
-import { Resource, Subject } from '../types';
-import ResourceCard from '../components/ResourceCard';
-import Spinner from '../components/Spinner';
-import ConfirmDialog from '../components/ConfirmDialog';
-import SubjectFilterDialog from '../components/SubjectFilterDialog';
-import { useAuth } from '../contexts/AuthContext';
-import { VideoIcon, SearchIcon, FilterIcon } from '../components/Icons';
+import { getResources, deleteResource } from '../services/googleSheetService.ts';
+import { getSubjects } from '../services/subjectService.ts';
+import { Resource, Subject } from '../types.ts';
+import ResourceCard from '../components/ResourceCard.tsx';
+import Spinner from '../components/Spinner.tsx';
+import ConfirmDialog from '../components/ConfirmDialog.tsx';
+import SubjectFilterDialog from '../components/SubjectFilterDialog.tsx';
+import { useAuth } from '../contexts/AuthContext.tsx';
+import { VideoIcon, SearchIcon, FilterIcon } from '../components/Icons.tsx';
 
 const encouragingMessages = [
     "Your next discovery is just a search away. What will you learn today?",

@@ -1,4 +1,5 @@
-import { User } from '../types';
+
+import { User } from '../types.ts';
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbwMCPhSKNab-CvtYfY114MdFqcuDS-SkmM3tlgfAr-Osjfxo0VJ04B76cRzgTiW9bmVUg/exec';
 

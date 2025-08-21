@@ -1,4 +1,5 @@
-import { Resource } from '../types';
+
+import { Resource } from '../types.ts';
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbxN_P9tB-rr6kVKy9MZwnZ2qb-c8meyTZaloyAglJ48xuJdbopda7PQsROJyipYGzfskw/exec';
 
