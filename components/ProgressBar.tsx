@@ -1,11 +1,7 @@
+
 import React from 'react';
 
-interface ProgressBarProps {
-  progress: number;
-  text: string;
-}
-
-const ProgressBar: React.FC<ProgressBarProps> = ({ progress, text }) => {
+const ProgressBar = ({ progress, text }) => {
   return (
     <div className="w-full my-8">
       <p className="text-lg text-text-primary font-medium text-center mb-2">{text}</p>

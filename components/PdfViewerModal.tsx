@@ -2,14 +2,7 @@
 import React from 'react';
 import { XIcon } from './Icons.js';
 
-interface PdfViewerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  pdfUrl: string;
-  title: string;
-}
-
-const PdfViewerModal: React.FC<PdfViewerModalProps> = ({ isOpen, onClose, pdfUrl, title }) => {
+const PdfViewerModal = ({ isOpen, onClose, pdfUrl, title }) => {
   if (!isOpen) return null;
   
   // Use Google Docs viewer for robust embedding that handles CORS and various PDF links

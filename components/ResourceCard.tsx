@@ -1,18 +1,9 @@
 
 import React from 'react';
 import { useNavigate } from 'https://esm.sh/react-router-dom';
-import { Resource, User } from '../types.js';
 import { EditIcon, TrashIcon } from './Icons.js';
 
-interface ResourceCardProps {
-  resource: Resource;
-  onDelete: (id: string) => void;
-  userRole?: User['role'];
-  animationDelay: string;
-  watchProgress?: number;
-}
-
-const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onDelete, userRole, animationDelay, watchProgress }) => {
+const ResourceCard = ({ resource, onDelete, userRole, animationDelay, watchProgress = undefined }) => {
   const navigate = useNavigate();
   const canEdit = userRole === 'admin' || userRole === 'super_admin';
   const canDelete = userRole === 'super_admin';

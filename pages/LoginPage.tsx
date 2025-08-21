@@ -4,14 +4,14 @@ import { useNavigate, Link } from 'https://esm.sh/react-router-dom';
 import { useAuth } from '../contexts/AuthContext.js';
 import Spinner from '../components/Spinner.js';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, error } = useAuth();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {

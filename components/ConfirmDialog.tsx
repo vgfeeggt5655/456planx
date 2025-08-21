@@ -1,16 +1,7 @@
+
 import React from 'react';
 
-interface ConfirmDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  message: React.ReactNode;
-  confirmButtonText?: string;
-  confirmButtonClass?: string;
-}
-
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+const ConfirmDialog = ({
   isOpen,
   onClose,
   onConfirm,

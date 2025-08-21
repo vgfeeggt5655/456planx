@@ -1,6 +1,4 @@
 
-import { User } from '../types.js';
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbwMCPhSKNab-CvtYfY114MdFqcuDS-SkmM3tlgfAr-Osjfxo0VJ04B76cRzgTiW9bmVUg/exec';
 
 // WARNING: This authentication method is highly insecure and not suitable for production.
@@ -9,7 +7,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwMCPhSKNab-CvtYfY114Md
 // This is implemented to match the requested architecture. A proper authentication
 // service (e.g., Firebase Auth, Auth0) should be used in a real application.
 
-export const getUsers = async (): Promise<User[]> => {
+export const getUsers = async () => {
   const response = await fetch(`${API_URL}?action=get`);
   if (!response.ok) {
     throw new Error('Failed to fetch users');
@@ -17,13 +15,13 @@ export const getUsers = async (): Promise<User[]> => {
   const data = await response.json();
   const users = data.data || [];
   // Ensure all IDs are strings to prevent type mismatches.
-  return users.map((user: any) => ({
+  return users.map((user) => ({
     ...user,
     id: String(user.id),
   }));
 };
 
-export const loginUser = async (email: string, password: string): Promise<User> => {
+export const loginUser = async (email, password) => {
     const users = await getUsers();
     const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
@@ -41,7 +39,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
     return user;
 };
 
-export const createUser = async (user: Omit<User, 'id'>): Promise<void> => {
+export const createUser = async (user) => {
   const formData = new FormData();
   formData.append('action', 'create');
   formData.append('name', user.name);
@@ -61,7 +59,7 @@ export const createUser = async (user: Omit<User, 'id'>): Promise<void> => {
   });
 };
 
-export const updateUser = async (user: User): Promise<void> => {
+export const updateUser = async (user) => {
     const formData = new FormData();
     formData.append('action', 'update');
     formData.append('id', user.id);
@@ -84,7 +82,7 @@ export const updateUser = async (user: User): Promise<void> => {
     });
 };
 
-export const deleteUser = async (id: string): Promise<void> => {
+export const deleteUser = async (id) => {
     const formData = new FormData();
     formData.append('action', 'delete');
     formData.append('id', id);

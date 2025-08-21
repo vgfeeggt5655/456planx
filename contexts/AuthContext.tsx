@@ -1,24 +1,13 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types.js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as authService from '../services/authService.js';
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-  login: (email: string, pass: string) => Promise<User>;
-  signup: (name: string, email: string, pass: string, avatar: string) => Promise<void>;
-  logout: () => void;
-  updateCurrentUser: (updatedUser: User) => void;
-}
+const AuthContext = createContext(undefined);
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     try {
@@ -34,7 +23,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email, pass) => {
     setLoading(true);
     setError(null);
     try {
@@ -42,7 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(loggedInUser);
       localStorage.setItem('user', JSON.stringify(loggedInUser));
       return loggedInUser;
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message);
       throw err;
     } finally {
@@ -50,12 +39,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
   
-  const signup = async (name: string, email: string, pass: string, avatar: string) => {
+  const signup = async (name, email, pass, avatar) => {
     setLoading(true);
     setError(null);
     try {
         await authService.createUser({ name, email, password: pass, role: 'user', avatar });
-    } catch (err: any) {
+    } catch (err) {
         setError(err.message);
         throw err;
     } finally {
@@ -68,7 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('user');
   };
 
-  const updateCurrentUser = (updatedUser: User) => {
+  const updateCurrentUser = (updatedUser) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
   };

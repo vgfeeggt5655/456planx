@@ -3,7 +3,6 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'https://esm.sh/react-router-dom';
 import { getResources } from '../services/googleSheetService.js';
 import { updateUser } from '../services/authService.js';
-import { Resource } from '../types.js';
 import Spinner from '../components/Spinner.js';
 import { DocumentIcon, BrainIcon, CloudDownloadIcon, CollectionIcon, SpeedIcon, ChevronDownIcon, CheckIcon } from '../components/Icons.js';
 import PdfViewerModal from '../components/PdfViewerModal.js';
@@ -11,15 +10,20 @@ import MCQTestModal from '../components/MCQTestModal.js';
 import FlashcardModal from '../components/FlashcardModal.js';
 import { useAuth } from '../contexts/AuthContext.js';
 
-type WatchedProgress = { time: number; duration: number };
+declare global {
+    interface Window {
+        YT: any;
+        onYouTubeIframeAPIReady: () => void;
+    }
+}
 
-const parseWatchedData = (watched: string | undefined | null): Record<string, WatchedProgress> => {
+const parseWatchedData = (watched) => {
     if (!watched || typeof watched !== 'string' || watched.trim() === '') return {};
     try {
         const data = JSON.parse(watched);
         if (typeof data !== 'object' || data === null || Array.isArray(data)) return {};
         
-        const normalizedData: Record<string, WatchedProgress> = {};
+        const normalizedData = {};
         for (const key in data) {
             if (typeof data[key] === 'number') {
                 normalizedData[key] = { time: data[key], duration: 0 };
@@ -34,7 +38,7 @@ const parseWatchedData = (watched: string | undefined | null): Record<string, Wa
     }
 };
 
-const getYoutubeVideoId = (url: string): string | null => {
+const getYoutubeVideoId = (url) => {
     let videoId = null;
     try {
         const urlObj = new URL(url);
@@ -47,14 +51,14 @@ const getYoutubeVideoId = (url: string): string | null => {
     return videoId;
 };
 
-const WatchPage: React.FC = () => {
-    const { resourceId } = useParams<{ resourceId: string }>();
+const WatchPage = () => {
+    const { resourceId } = useParams();
     const { user, updateCurrentUser } = useAuth();
     
-    const [allResources, setAllResources] = useState<Resource[]>([]);
-    const [resource, setResource] = useState<Resource | null>(null);
+    const [allResources, setAllResources] = useState([]);
+    const [resource, setResource] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
 
     const [isPdfOpen, setPdfOpen] = useState(false);
     const [isTestOpen, setTestOpen] = useState(false);
@@ -68,14 +72,14 @@ const WatchPage: React.FC = () => {
     const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
 
     // Refs for players
-    const videoRef = useRef<HTMLVideoElement>(null); // For direct video links
-    const ytPlayerRef = useRef<any>(null); // For YouTube player instance
-    const speedMenuRef = useRef<HTMLDivElement>(null);
+    const videoRef = useRef(null); // For direct video links
+    const ytPlayerRef = useRef(null); // For YouTube player instance
+    const speedMenuRef = useRef(null);
     
     // Refs for performant progress tracking
     const currentTimeRef = useRef(0);
     const durationRef = useRef(0);
-    const watchedDataRef = useRef<Record<string, WatchedProgress>>({});
+    const watchedDataRef = useRef({});
 
     const isYoutubeVideo = useMemo(() => {
         if (!resource) return false;
@@ -101,7 +105,7 @@ const WatchPage: React.FC = () => {
     useEffect(() => {
         if (!resource) return;
 
-        const restoreProgress = (player: any, isYt: boolean) => {
+        const restoreProgress = (player, isYt) => {
              if (user && resourceId) {
                 const watchedData = parseWatchedData(user.watched);
                 const savedProgress = watchedData[resourceId];
@@ -119,21 +123,21 @@ const WatchPage: React.FC = () => {
             const createPlayer = () => {
                 if (ytPlayerRef.current) { ytPlayerRef.current.destroy(); }
                 
-                ytPlayerRef.current = new (window as any).YT.Player('youtube-player-container', {
+                ytPlayerRef.current = new (window).YT.Player('youtube-player-container', {
                     videoId,
                     playerVars: { autoplay: 0, controls: 1, rel: 0, modestbranding: 1, playsinline: 1 },
                     events: {
-                        onReady: (e: any) => {
+                        onReady: (e) => {
                             const player = e.target;
                             durationRef.current = player.getDuration() || 0;
                             restoreProgress(player, true);
                         },
-                        onStateChange: (e: any) => {
+                        onStateChange: (e) => {
                             const state = e.data;
-                            const playerState = (window as any).YT.PlayerState;
+                            const playerState = (window).YT.PlayerState;
                             setIsPlaying(state === playerState.PLAYING);
                         },
-                        onError: (e: any) => {
+                        onError: (e) => {
                             console.error('YouTube Player Error:', e.data);
                             setError(`A YouTube player error occurred (code: ${e.data}). This video may be private, deleted, or unavailable for embedding.`);
                         }
@@ -141,8 +145,8 @@ const WatchPage: React.FC = () => {
                 });
             };
             
-            if ((window as any).YT && (window as any).YT.Player) createPlayer();
-            else (window as any).onYouTubeIframeAPIReady = createPlayer;
+            if ((window).YT && (window).YT.Player) createPlayer();
+            else (window).onYouTubeIframeAPIReady = createPlayer;
 
         } else { // For direct video links, use the standard player but track its state
             const video = videoRef.current;
@@ -185,8 +189,8 @@ const WatchPage: React.FC = () => {
 
     // Effect to handle closing speed menu on outside click
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (speedMenuRef.current && !speedMenuRef.current.contains(event.target as Node)) {
+        const handleClickOutside = (event) => {
+            if (speedMenuRef.current && !speedMenuRef.current.contains(event.target)) {
                 setIsSpeedMenuOpen(false);
             }
         };
@@ -252,7 +256,7 @@ const WatchPage: React.FC = () => {
         return allResources.filter(r => r.Subject_Name === resource.Subject_Name && r.id !== resource.id).reverse();
     }, [resource, allResources]);
     
-    const forceDownload = async (url: string, fileName: string) => {
+    const forceDownload = async (url, fileName) => {
         const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
         try {
             const res = await fetch(proxyUrl);

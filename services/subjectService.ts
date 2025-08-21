@@ -1,9 +1,7 @@
 
-import { Subject } from '../types.js';
-
 const API_URL = 'https://script.google.com/macros/s/AKfycby23phjhXwfM8N_5YTgQsKGehhPp7Tw3pa-KFHt1O0IWlKqmIUZv2lekltLhOe-OjeVMg/exec';
 
-export const getSubjects = async (): Promise<Subject[]> => {
+export const getSubjects = async () => {
   // App Script needs a parameter to know what action to perform.
   const response = await fetch(`${API_URL}?action=get`);
   if (!response.ok) {
@@ -12,14 +10,14 @@ export const getSubjects = async (): Promise<Subject[]> => {
   const data = await response.json();
   // Ensure every subject has an order property, default to 0 if missing
   const subjects = data.data || [];
-  return subjects.map((s: any, index: number) => ({
+  return subjects.map((s, index) => ({
     ...s,
     id: String(s.id),
     number: s.number !== undefined && s.number !== null ? Number(s.number) : index
   }));
 };
 
-export const addSubject = async (subjectName: string): Promise<void> => {
+export const addSubject = async (subjectName) => {
   const formData = new FormData();
   formData.append('action', 'create');
   formData.append('Subject_Name', subjectName);
@@ -31,7 +29,7 @@ export const addSubject = async (subjectName: string): Promise<void> => {
   });
 };
 
-export const updateSubject = async (id: string, subjectName: string, number?: number): Promise<void> => {
+export const updateSubject = async (id, subjectName, number?) => {
     const formData = new FormData();
     formData.append('action', 'update');
     formData.append('id', id);
@@ -48,7 +46,7 @@ export const updateSubject = async (id: string, subjectName: string, number?: nu
 };
 
 
-export const deleteSubject = async (id: string): Promise<void> => {
+export const deleteSubject = async (id) => {
     const formData = new FormData();
     formData.append('action', 'delete');
     formData.append('id', id);

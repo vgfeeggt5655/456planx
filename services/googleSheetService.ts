@@ -1,9 +1,7 @@
 
-import { Resource } from '../types.js';
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbxN_P9tB-rr6kVKy9MZwnZ2qb-c8meyTZaloyAglJ48xuJdbopda7PQsROJyipYGzfskw/exec';
 
-export const getResources = async (): Promise<Resource[]> => {
+export const getResources = async () => {
   const response = await fetch(API_URL);
   if (!response.ok) {
     throw new Error('Failed to fetch resources');
@@ -11,13 +9,13 @@ export const getResources = async (): Promise<Resource[]> => {
   const data = await response.json();
   const resources = data.data || [];
   // Ensure all IDs are strings to prevent type mismatches, which can break lookup features.
-  return resources.map((resource: any) => ({
+  return resources.map((resource) => ({
       ...resource,
       id: String(resource.id),
   }));
 };
 
-export const createResource = async (resource: Omit<Resource, 'id'>): Promise<void> => {
+export const createResource = async (resource) => {
   const formData = new FormData();
   formData.append('action', 'create');
   formData.append('title', resource.title);
@@ -35,7 +33,7 @@ export const createResource = async (resource: Omit<Resource, 'id'>): Promise<vo
 };
 
 
-export const updateResource = async (resource: Resource): Promise<void> => {
+export const updateResource = async (resource) => {
     const formData = new FormData();
     formData.append('action', 'update');
     formData.append('id', resource.id);
@@ -53,7 +51,7 @@ export const updateResource = async (resource: Resource): Promise<void> => {
 };
 
 
-export const deleteResource = async (id: string): Promise<void> => {
+export const deleteResource = async (id) => {
     const formData = new FormData();
     formData.append('action', 'delete');
     formData.append('id', id);

@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MCQ, Resource } from '../types.js';
 import { generateMCQs } from '../services/geminiService.js';
 import Spinner from './Spinner.js';
 import { XIcon, CheckCircleIcon, XCircleIcon } from './Icons.js';
@@ -9,23 +8,12 @@ import * as pdfjsLib from 'pdfjs-dist';
 // Set up the PDF.js worker. This is required for the library to work.
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.5.136/build/pdf.worker.mjs`;
 
-
-interface MCQTestModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  resource: Resource;
-}
-
-type QuizState = 'loading' | 'active' | 'results' | 'error';
-type LoadingStage = 'Parsing PDF...' | 'Generating quiz...' | '';
-
-
 /**
  * Fetches a PDF from a URL and extracts its text content.
  * @param pdfUrl The URL of the PDF file.
  * @returns A promise that resolves with the extracted text.
  */
-const extractTextFromPdf = async (pdfUrl: string): Promise<string> => {
+const extractTextFromPdf = async (pdfUrl) => {
     // Use a reliable proxy to bypass potential CORS issues.
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(pdfUrl)}`;
     
@@ -42,15 +30,15 @@ const extractTextFromPdf = async (pdfUrl: string): Promise<string> => {
 };
 
 
-const MCQTestModal: React.FC<MCQTestModalProps> = ({ isOpen, onClose, resource }) => {
-  const [quizState, setQuizState] = useState<QuizState>('loading');
-  const [loadingStage, setLoadingStage] = useState<LoadingStage>('');
-  const [mcqs, setMcqs] = useState<MCQ[]>([]);
-  const [error, setError] = useState<string | null>(null);
+const MCQTestModal = ({ isOpen, onClose, resource }) => {
+  const [quizState, setQuizState] = useState('loading');
+  const [loadingStage, setLoadingStage] = useState('');
+  const [mcqs, setMcqs] = useState([]);
+  const [error, setError] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [finalAnswers, setFinalAnswers] = useState<Record<number, string>>({});
+  const [userAnswers, setUserAnswers] = useState({});
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [finalAnswers, setFinalAnswers] = useState({});
   const [score, setScore] = useState(0);
 
   const loadQuiz = useCallback(async () => {
@@ -77,7 +65,7 @@ const MCQTestModal: React.FC<MCQTestModalProps> = ({ isOpen, onClose, resource }
       }
       setMcqs(questions);
       setQuizState('active');
-    } catch (err: any) {
+    } catch (err) {
       console.error("Quiz generation failed:", err);
       setError(err.message || 'An unknown error occurred.');
       setQuizState('error');
@@ -114,7 +102,7 @@ const MCQTestModal: React.FC<MCQTestModalProps> = ({ isOpen, onClose, resource }
     }
   };
   
-  const getOptionClass = (option: string) => {
+  const getOptionClass = (option) => {
     return selectedOption === option
         ? 'bg-primary/30 border-primary text-primary'
         : 'bg-surface hover:bg-slate-600 border-border-color';

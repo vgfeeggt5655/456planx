@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext.js';
-import { Resource, User, Subject } from '../types.js';
 
 import * as resourceService from '../services/googleSheetService.js';
 import * as authService from '../services/authService.js';
@@ -16,14 +15,12 @@ import SubjectSelectionDialog from '../components/SubjectSelectionDialog.js';
 import { ChevronDownIcon, EditIcon, TrashIcon, PlusCircleIcon, UserGroupIcon, ClipboardListIcon, VideoIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from '../components/Icons.js';
 
 
-type AdminTab = 'content' | 'users' | 'subjects';
-
 // ====================================================================================
 // Resource Form Modal (extracted from the old ResourceFormPage)
 // ====================================================================================
 
 // Helper function to convert a data URL to a File object
-const dataURLtoFile = (dataurl: string, filename: string): File => {
+const dataURLtoFile = (dataurl, filename) => {
     const arr = dataurl.split(',');
     if (arr.length < 2) throw new Error("Invalid data URL");
     const mimeMatch = arr[0].match(/:(.*?);/);
@@ -36,85 +33,67 @@ const dataURLtoFile = (dataurl: string, filename: string): File => {
     return new File([u8arr], filename, { type: mime });
 }
 
-interface ResourceFormModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: () => void;
-    resourceToEdit: Resource | null;
-}
-
-const ResourceFormModal: React.FC<ResourceFormModalProps> = ({ isOpen, onClose, onSave, resourceToEdit }) => {
+const ResourceFormModal = ({ isOpen, onClose, onSave, resourceToEdit }) => {
     const isEditMode = Boolean(resourceToEdit);
 
     const [title, setTitle] = useState('');
     const [subjectName, setSubjectName] = useState('');
-    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [subjects, setSubjects] = useState([]);
     
     // Video source selection
-    const [videoInputMethod, setVideoInputMethod] = useState<'upload' | 'link'>('upload');
+    const [videoInputMethod, setVideoInputMethod] = useState('upload');
     
     // For creating new resources
-    const [videoFile, setVideoFile] = useState<File | null>(null);
-    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [videoFile, setVideoFile] = useState(null);
+    const [pdfFile, setPdfFile] = useState(null);
     
     // For editing links directly OR replacing files
     const [videoLink, setVideoLink] = useState('');
     const [pdfLink, setPdfLink] = useState('');
     const [imageUrl, setImageUrl] = useState('');
-    const [newVideoFile, setNewVideoFile] = useState<File | null>(null);
-    const [newPdfFile, setNewPdfFile] = useState<File | null>(null);
-    const [newImageFile, setNewImageFile] = useState<File | null>(null);
+    const [newVideoFile, setNewVideoFile] = useState(null);
+    const [newPdfFile, setNewPdfFile] = useState(null);
+    const [newImageFile, setNewImageFile] = useState(null);
 
 
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState({ stage: '', percentage: 0 });
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
     const [isSubjectDialogOpen, setSubjectDialogOpen] = useState(false);
     
-    const isYoutubeLink = (url: string) => url.includes('youtube.com') || url.includes('youtu.be');
+    const isYoutubeLink = (url) => url.includes('youtube.com') || url.includes('youtu.be');
 
     useEffect(() => {
-        const fetchSubjects = async () => {
+        const fetchAndSetState = async () => {
             try {
                 const availableSubjects = await subjectService.getSubjects();
                 setSubjects(availableSubjects);
                 if (resourceToEdit) {
-                    setTitle(resourceToEdit.title);
-                    setSubjectName(resourceToEdit.Subject_Name);
-                    setVideoLink(resourceToEdit.video_link);
-                    setPdfLink(resourceToEdit.pdf_link);
-                    setImageUrl(resourceToEdit.image_url);
-                    if (isYoutubeLink(resourceToEdit.video_link)) {
-                        setVideoInputMethod('link');
-                    } else {
-                        setVideoInputMethod('upload');
-                    }
-                } else if (availableSubjects.length > 0) {
-                    setSubjectName(availableSubjects[0].Subject_Name);
+                    const typedResource = resourceToEdit as any;
+                    setTitle(typedResource.title);
+                    setSubjectName(typedResource.Subject_Name);
+                    setVideoLink(typedResource.video_link);
+                    setPdfLink(typedResource.pdf_link);
+                    setImageUrl(typedResource.image_url);
+                    setVideoInputMethod(isYoutubeLink(typedResource.video_link) ? 'link' : 'upload');
+                } else {
+                    setTitle('');
+                    setSubjectName(availableSubjects.length > 0 ? availableSubjects[0].Subject_Name : '');
+                    setVideoFile(null);
+                    setPdfFile(null);
+                    setVideoLink('');
+                    setPdfLink('');
+                    setImageUrl('');
+                    setVideoInputMethod('upload');
                 }
-            } catch (err) { console.error("Failed to load subjects", err); }
+            } catch (err) {
+                console.error("Failed to load subjects", err);
+            }
         };
 
         if (isOpen) {
-            fetchSubjects();
-            // Reset form state when modal opens
-            if (resourceToEdit) {
-                 setTitle(resourceToEdit.title);
-                 setSubjectName(resourceToEdit.Subject_Name);
-                 setVideoLink(resourceToEdit.video_link);
-                 setPdfLink(resourceToEdit.pdf_link);
-                 setImageUrl(resourceToEdit.image_url);
-                 setVideoInputMethod(isYoutubeLink(resourceToEdit.video_link) ? 'link' : 'upload');
-            } else {
-                setTitle('');
-                setSubjectName('');
-                setVideoFile(null);
-                setPdfFile(null);
-                setVideoLink('');
-                setPdfLink('');
-                setImageUrl('');
-                setVideoInputMethod('upload');
-            }
+            fetchAndSetState();
+            // Reset state for file inputs and errors regardless of mode
             setNewVideoFile(null);
             setNewPdfFile(null);
             setNewImageFile(null);
@@ -123,13 +102,13 @@ const ResourceFormModal: React.FC<ResourceFormModalProps> = ({ isOpen, onClose, 
         }
     }, [isOpen, resourceToEdit]);
     
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>) => {
+    const handleFileChange = (e, setFile) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
 
@@ -158,10 +137,11 @@ const ResourceFormModal: React.FC<ResourceFormModalProps> = ({ isOpen, onClose, 
                  let updatedVideoLink = videoLink;
                  let updatedPdfLink = pdfLink;
                  let updatedImageUrl = imageUrl;
-                 const baseName = resourceToEdit.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                 const typedResource = resourceToEdit as any;
+                 const baseName = typedResource.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
                  // Max identifier length is 100. ID is variable. Let's cap baseName at 80 to be safe.
                  const safeBaseName = (baseName || 'item').substring(0, 80);
-                 const itemName = `${safeBaseName}-${resourceToEdit.id}`;
+                 const itemName = `${safeBaseName}-${typedResource.id}`;
 
                 if (newVideoFile) {
                     setProgress({ stage: 'Uploading new video...', percentage: 0 });
@@ -177,7 +157,7 @@ const ResourceFormModal: React.FC<ResourceFormModalProps> = ({ isOpen, onClose, 
                 }
                 
                 setProgress({ stage: 'Updating resource details...', percentage: 95 });
-                const resourceToUpdate: Resource = {
+                const resourceToUpdate = {
                     ...resourceToEdit,
                     title,
                     Subject_Name: subjectName,
@@ -221,7 +201,7 @@ const ResourceFormModal: React.FC<ResourceFormModalProps> = ({ isOpen, onClose, 
                 onSave();
                 handleClose();
             }, 1000);
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
             setError(`Operation failed: ${err.message || 'Please try again.'}`);
             setLoading(false);
@@ -336,37 +316,37 @@ const ResourceFormModal: React.FC<ResourceFormModalProps> = ({ isOpen, onClose, 
 // Main Admin Dashboard Page
 // ====================================================================================
 
-const AdminDashboardPage: React.FC = () => {
+const AdminDashboardPage = () => {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<AdminTab>('content');
+    const [activeTab, setActiveTab] = useState('content');
     
     // Global States
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
 
     // Resources State
-    const [resources, setResources] = useState<Resource[]>([]);
+    const [resources, setResources] = useState([]);
     const [resourceSearchTerm, setResourceSearchTerm] = useState('');
     const [isFormModalOpen, setFormModalOpen] = useState(false);
-    const [resourceToEdit, setResourceToEdit] = useState<Resource | null>(null);
-    const [resourceToDelete, setResourceToDelete] = useState<Resource | null>(null);
+    const [resourceToEdit, setResourceToEdit] = useState(null);
+    const [resourceToDelete, setResourceToDelete] = useState(null);
     
     // Users State
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState([]);
     const [userSearchTerm, setUserSearchTerm] = useState('');
-    const [userDialog, setUserDialog] = useState<{action: 'delete' | 'updateRole' | null, user: User | null, newRole?: User['role']}>({action: null, user: null});
+    const [userDialog, setUserDialog] = useState({action: null, user: null});
 
     // Subjects State
-    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [subjects, setSubjects] = useState([]);
     const [subjectSearchTerm, setSubjectSearchTerm] = useState('');
     const [newSubjectName, setNewSubjectName] = useState('');
-    const [editingSubject, setEditingSubject] = useState<{ subject: Subject; newName: string } | null>(null);
-    const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(null);
+    const [editingSubject, setEditingSubject] = useState(null);
+    const [subjectToDelete, setSubjectToDelete] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isOrderChanged, setIsOrderChanged] = useState(false);
 
     
-    const fetchData = useCallback(async (tab: AdminTab) => {
+    const fetchData = useCallback(async (tab) => {
         setLoading(true);
         setError(null);
         try {
@@ -410,7 +390,7 @@ const AdminDashboardPage: React.FC = () => {
 
     // Resource Actions
     const handleAddResource = () => { setResourceToEdit(null); setFormModalOpen(true); };
-    const handleEditResource = (res: Resource) => { setResourceToEdit(res); setFormModalOpen(true); };
+    const handleEditResource = (res) => { setResourceToEdit(res); setFormModalOpen(true); };
     const handleDeleteResource = async () => {
         if (!resourceToDelete) return;
         await resourceService.deleteResource(resourceToDelete.id);
@@ -419,7 +399,7 @@ const AdminDashboardPage: React.FC = () => {
     };
 
     // User Actions
-    const handleUserRoleChange = async (targetUser: User, newRole: User['role']) => {
+    const handleUserRoleChange = async (targetUser, newRole) => {
         if (targetUser.role === newRole) return;
         await authService.updateUser({ ...targetUser, role: newRole });
         setUserDialog({action: null, user: null});
@@ -433,7 +413,7 @@ const AdminDashboardPage: React.FC = () => {
     };
 
     // Subject Actions
-    const handleAddSubject = async (e: React.FormEvent) => {
+    const handleAddSubject = async (e) => {
         e.preventDefault();
         if (!newSubjectName.trim()) return;
         setIsSubmitting(true);
@@ -445,7 +425,7 @@ const AdminDashboardPage: React.FC = () => {
     const handleUpdateSubject = async () => {
         if (!editingSubject) return;
         setIsSubmitting(true);
-        await subjectService.updateSubject(editingSubject.subject.id, editingSubject.newName);
+        await subjectService.updateSubject(editingSubject.subject.id, editingSubject.newName, editingSubject.subject.number);
         setEditingSubject(null);
         await fetchData('subjects');
         setIsSubmitting(false);
@@ -459,7 +439,7 @@ const AdminDashboardPage: React.FC = () => {
         setIsSubmitting(false);
     };
     
-    const handleMoveSubject = (index: number, direction: 'up' | 'down') => {
+    const handleMoveSubject = (index, direction) => {
         const newSubjects = [...subjects];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
         if (targetIndex < 0 || targetIndex >= newSubjects.length) return;
@@ -487,7 +467,7 @@ const AdminDashboardPage: React.FC = () => {
         }
     };
     
-    const TabButton: React.FC<{tab: AdminTab, label: string, icon: React.ReactNode}> = ({ tab, label, icon }) => (
+    const TabButton = ({ tab, label, icon }) => (
         <button
             onClick={() => setActiveTab(tab)}
             className={`flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium rounded-t-md transition-colors border-b-2 ${
@@ -584,7 +564,7 @@ const AdminDashboardPage: React.FC = () => {
                                                      <td className="px-2 sm:px-4 py-3 text-sm text-text-primary">{u.name}</td>
                                                      <td className="px-2 sm:px-4 py-3 text-sm text-text-primary truncate max-w-xs">{u.email}</td>
                                                      <td className="px-2 sm:px-4 py-3 text-sm text-text-secondary">
-                                                         <select value={u.role} onChange={(e) => handleUserRoleChange(u, e.target.value as User['role'])} className={`${inputClass} max-w-xs py-1`}>
+                                                         <select value={u.role} onChange={(e) => handleUserRoleChange(u, e.target.value)} className={`${inputClass} max-w-xs py-1`}>
                                                              <option value="user">User</option>
                                                              <option value="admin">Admin</option>
                                                              <option value="super_admin">Super Admin</option>

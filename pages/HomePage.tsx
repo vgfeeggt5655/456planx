@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'https://esm.sh/react-router-dom';
 import { getResources, deleteResource } from '../services/googleSheetService.js';
 import { getSubjects } from '../services/subjectService.js';
-import { Resource, Subject } from '../types.js';
 import ResourceCard from '../components/ResourceCard.js';
 import Spinner from '../components/Spinner.js';
 import ConfirmDialog from '../components/ConfirmDialog.js';
@@ -19,16 +18,15 @@ const encouragingMessages = [
     "Knowledge is power. Find your next lecture and empower yourself."
 ];
 
-type WatchedProgress = { time: number; duration: number };
 
-const parseWatchedData = (watched: string | undefined | null): Record<string, WatchedProgress> => {
+const parseWatchedData = (watched) => {
     if (!watched || typeof watched !== 'string' || watched.trim() === '') return {};
     try {
         const data = JSON.parse(watched);
         if (typeof data !== 'object' || data === null || Array.isArray(data)) return {};
         
         // Normalize data to new format for backward compatibility
-        const normalizedData: Record<string, WatchedProgress> = {};
+        const normalizedData = {};
         for (const key in data) {
             if (typeof data[key] === 'number') {
                 // Old format: just seconds. Duration is unknown.
@@ -46,12 +44,12 @@ const parseWatchedData = (watched: string | undefined | null): Record<string, Wa
 };
 
 
-const HomePage: React.FC = () => {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+const HomePage = () => {
+  const [resources, setResources] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [dialogState, setDialogState] = useState<{isOpen: boolean; resourceId: string | null}>({ isOpen: false, resourceId: null });
+  const [error, setError] = useState(null);
+  const [dialogState, setDialogState] = useState({ isOpen: false, resourceId: null });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [isFilterOpen, setFilterOpen] = useState(false);
@@ -101,7 +99,7 @@ const HomePage: React.FC = () => {
       );
   }, [resources, searchTerm, selectedSubject]);
   
-  const watchedData = useMemo(() => parseWatchedData(user?.watched), [user]);
+  const watchedData: { [key: string]: { time: number; duration: number } } = useMemo(() => parseWatchedData(user?.watched), [user]);
   
   const continueWatchingResources = useMemo(() => {
       const watchedEntries = Object.entries(watchedData);
@@ -116,7 +114,7 @@ const HomePage: React.FC = () => {
               const percentage = progress.duration > 0 ? (progress.time / progress.duration) * 100 : 0;
               return { resource, progress: percentage };
           })
-          .filter((item): item is { resource: Resource; progress: number } => item !== null)
+          .filter((item) => item !== null)
           .sort((a, b) => (watchedData[b.resource.id]?.time || 0) - (watchedData[a.resource.id]?.time || 0)); // Sort by most recently watched
   }, [resources, watchedData]);
 
@@ -129,7 +127,7 @@ const HomePage: React.FC = () => {
         }
         acc[subject].push(resource);
         return acc;
-    }, {} as Record<string, Resource[]>);
+    }, {});
   }, [filteredResources]);
   
   const orderedSubjects = useMemo(() => {
@@ -138,7 +136,7 @@ const HomePage: React.FC = () => {
   }, [filteredResources, subjects]);
 
 
-  const handleDeleteRequest = (id: string) => {
+  const handleDeleteRequest = (id) => {
     setDialogState({ isOpen: true, resourceId: id });
   };
 
@@ -148,7 +146,7 @@ const HomePage: React.FC = () => {
     try {
       await deleteResource(dialogState.resourceId);
       setResources(prev => prev.filter(r => r.id !== dialogState.resourceId));
-    } catch (err) {
+    } catch (err) => {
       alert('Failed to delete resource. Please try again.');
       console.error(err);
     } finally {

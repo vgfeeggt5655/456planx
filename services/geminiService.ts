@@ -1,6 +1,5 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { MCQ, Flashcard } from '../types.js';
 
 // The 'if (!process.env.API_KEY)' check was removed as it crashed the app in browser environments.
 // Optional chaining is used here to safely access `process.env.API_KEY`. If it doesn't exist,
@@ -16,7 +15,7 @@ const ai = new GoogleGenAI({ apiKey: process?.env?.API_KEY || "" });
  * @param maxHeight The maximum height of the resized image.
  * @returns A promise that resolves with the resized base64 data URI.
  */
-const resizeImage = (base64Str: string, maxWidth: number, maxHeight: number): Promise<string> => {
+const resizeImage = (base64Str, maxWidth, maxHeight) => {
     return new Promise((resolve) => {
         const img = new Image();
         img.src = base64Str;
@@ -55,7 +54,7 @@ const resizeImage = (base64Str: string, maxWidth: number, maxHeight: number): Pr
 };
 
 
-export const generateImage = async (prompt: string): Promise<string> => {
+export const generateImage = async (prompt) => {
   try {
     const response = await ai.models.generateImages({
         model: 'imagen-3.0-generate-002',
@@ -68,7 +67,7 @@ export const generateImage = async (prompt: string): Promise<string> => {
     });
 
     if (response.generatedImages && response.generatedImages.length > 0) {
-      const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
+      const base64ImageBytes = response.generatedImages[0].image.imageBytes;
       const originalDataUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
       
       // Resize to a max width of 800px to reduce the base64 string length significantly
@@ -85,7 +84,7 @@ export const generateImage = async (prompt: string): Promise<string> => {
   }
 };
 
-export const generateMCQs = async (pdfText: string): Promise<MCQ[]> => {
+export const generateMCQs = async (pdfText) => {
   try {
     // Truncate text to avoid exceeding token limits, focusing on the beginning which often has objectives.
     const truncatedText = pdfText.length > 20000 ? pdfText.substring(0, 20000) : pdfText;
@@ -136,7 +135,7 @@ export const generateMCQs = async (pdfText: string): Promise<MCQ[]> => {
   }
 };
 
-export const generateFlashcards = async (pdfText: string): Promise<Flashcard[]> => {
+export const generateFlashcards = async (pdfText) => {
   try {
     const truncatedText = pdfText.length > 20000 ? pdfText.substring(0, 20000) : pdfText;
     const prompt = `Based on the following text from a medical lecture PDF, create a set of flashcards. Each flashcard should have a "front" (a question or a term) and a "back" (the answer or definition). Focus on key concepts, definitions, and important facts. Create around 15-20 flashcards. Text: "${truncatedText}"`;

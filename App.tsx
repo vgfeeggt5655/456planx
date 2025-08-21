@@ -11,7 +11,7 @@ import ProfilePage from './pages/ProfilePage.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import { AuthProvider } from './contexts/AuthContext.js';
 
-const ProtectedLayout: React.FC = () => (
+const ProtectedLayout = () => (
   <div className="min-h-screen flex flex-col">
     <Header />
     <main className="flex-grow">
@@ -20,13 +20,13 @@ const ProtectedLayout: React.FC = () => (
   </div>
 );
 
-const App: React.FC = () => {
+const App = () => {
   useEffect(() => {
-    const handleContextMenu = (event: MouseEvent) => {
+    const handleContextMenu = (event) => {
       event.preventDefault();
     };
 
-    const handleDragStart = (event: DragEvent) => {
+    const handleDragStart = (event) => {
       // Prevent dragging of images, links, and videos, which can reveal source URLs
       // when dropped into a new tab or window.
       if (

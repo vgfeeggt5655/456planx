@@ -1,15 +1,7 @@
+
 import React from 'react';
-import { Subject } from '../types.js';
 
-interface SubjectSelectionDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  subjects: Subject[];
-  selectedSubject: string;
-  onSelectSubject: (subjectName: string) => void;
-}
-
-const SubjectSelectionDialog: React.FC<SubjectSelectionDialogProps> = ({
+const SubjectSelectionDialog = ({
   isOpen,
   onClose,
   subjects,
@@ -18,7 +10,7 @@ const SubjectSelectionDialog: React.FC<SubjectSelectionDialogProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const handleSelect = (subjectName: string) => {
+  const handleSelect = (subjectName) => {
     onSelectSubject(subjectName);
     onClose();
   };

@@ -1,15 +1,7 @@
+
 import React from 'react';
-import { Subject } from '../types.js';
 
-interface SubjectFilterDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  subjects: Subject[];
-  selectedSubject: string;
-  onSelectSubject: (subjectName: string) => void;
-}
-
-const SubjectFilterDialog: React.FC<SubjectFilterDialogProps> = ({
+const SubjectFilterDialog = ({
   isOpen,
   onClose,
   subjects,
@@ -18,7 +10,7 @@ const SubjectFilterDialog: React.FC<SubjectFilterDialogProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const handleSelect = (subjectName: string) => {
+  const handleSelect = (subjectName) => {
     onSelectSubject(subjectName);
     onClose();
   };

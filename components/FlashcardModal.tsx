@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { jsPDF } from 'jspdf';
-import { Flashcard, Resource } from '../types.js';
 import { generateFlashcards } from '../services/geminiService.js';
 import Spinner from './Spinner.js';
 import { XIcon, RefreshIcon, ArrowLeftIcon, ArrowRightIcon, CloudDownloadIcon } from './Icons.js';
@@ -10,16 +9,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 // PDF.js worker setup is required.
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.5.136/build/pdf.worker.mjs`;
 
-
-interface FlashcardModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  resource: Resource;
-}
-
-type FlashcardState = 'loading' | 'active' | 'error';
-
-const extractTextFromPdf = async (pdfUrl: string): Promise<string> => {
+const extractTextFromPdf = async (pdfUrl) => {
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(pdfUrl)}`;
     const loadingTask = pdfjsLib.getDocument(proxyUrl);
     const pdf = await loadingTask.promise;
@@ -34,10 +24,10 @@ const extractTextFromPdf = async (pdfUrl: string): Promise<string> => {
 };
 
 
-const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, resource }) => {
-    const [cardState, setCardState] = useState<FlashcardState>('loading');
-    const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
-    const [error, setError] = useState<string | null>(null);
+const FlashcardModal = ({ isOpen, onClose, resource }) => {
+    const [cardState, setCardState] = useState('loading');
+    const [flashcards, setFlashcards] = useState([]);
+    const [error, setError] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -59,7 +49,7 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, resour
             }
             setFlashcards(generatedCards);
             setCardState('active');
-        } catch (err: any) {
+        } catch (err) {
             setError(err.message || 'An unknown error occurred.');
             setCardState('error');
         }
@@ -99,10 +89,10 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, resour
             const contentWidth = pageWidth - (PAGE_MARGIN * 2);
             
             // Store card positions to align Q&A pages
-            const pageGroups: { cards: { text: string; y: number; height: number }[] }[] = [];
+            const pageGroups = [];
 
             let currentY = PAGE_MARGIN;
-            let cardsOnPage: { text: string; y: number; height: number }[] = [];
+            let cardsOnPage = [];
             
             const cardData = flashcards.map(card => {
                 doc.setFont('helvetica', 'bold');

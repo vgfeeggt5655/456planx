@@ -7,9 +7,7 @@
 const ACCESS_KEY = process?.env?.ARCHIVE_ACCESS_KEY || '';
 const SECRET_KEY = process?.env?.ARCHIVE_SECRET_KEY || '';
 
-type MediaType = 'movies' | 'texts' | 'image';
-
-const getMediaType = (file: File): MediaType => {
+const getMediaType = (file) => {
     if (file.type.startsWith('video/')) return 'movies';
     if (file.type === 'application/pdf') return 'texts';
     if (file.type.startsWith('image/')) return 'image';
@@ -24,10 +22,10 @@ const getMediaType = (file: File): MediaType => {
  * @returns A promise that resolves with the public URL of the uploaded file.
  */
 export const uploadFile = (
-    file: File,
-    itemName: string,
-    onProgress: (percent: number) => void
-): Promise<string> => {
+    file,
+    itemName,
+    onProgress
+) => {
     return new Promise((resolve, reject) => {
         if (!ACCESS_KEY || !SECRET_KEY) {
             const errorMessage = "Archive service API keys are not configured. Please set ARCHIVE_ACCESS_KEY and ARCHIVE_SECRET_KEY environment variables.";

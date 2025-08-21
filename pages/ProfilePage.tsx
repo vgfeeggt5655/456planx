@@ -13,24 +13,24 @@ const AVATARS = [
     'https://i.pinimg.com/736x/1f/25/f5/1f25f5903952a2dbca09050725ebae35.jpg',
 ];
 
-const ProfilePage: React.FC = () => {
+const ProfilePage = () => {
     const { user, updateCurrentUser } = useAuth();
     
     // Profile State
     const [name, setName] = useState(user?.name || '');
     const [avatar, setAvatar] = useState(user?.avatar || '');
     const [profileLoading, setProfileLoading] = useState(false);
-    const [profileError, setProfileError] = useState<string | null>(null);
-    const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
+    const [profileError, setProfileError] = useState(null);
+    const [profileSuccess, setProfileSuccess] = useState(null);
 
     // Password State
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordLoading, setPasswordLoading] = useState(false);
-    const [passwordError, setPasswordError] = useState<string | null>(null);
-    const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+    const [passwordError, setPasswordError] = useState(null);
+    const [passwordSuccess, setPasswordSuccess] = useState(null);
     
-    const getFormattedVersion = (currentName: string): string => {
+    const getFormattedVersion = (currentName) => {
         let formatted = currentName.trim();
         if (!/^dr\.?\s/i.test(formatted)) {
             return `Dr. ${formatted}`;
@@ -38,7 +38,7 @@ const ProfilePage: React.FC = () => {
         return formatted;
     };
 
-    const handleProfileSubmit = async (e: React.FormEvent) => {
+    const handleProfileSubmit = async (e) => {
         e.preventDefault();
         if (!user) return;
 
@@ -70,7 +70,7 @@ const ProfilePage: React.FC = () => {
         }
     };
     
-    const handlePasswordSubmit = async (e: React.FormEvent) => {
+    const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         if (!user) return;
         

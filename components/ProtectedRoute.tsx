@@ -3,14 +3,8 @@ import React from 'react';
 import { Navigate } from 'https://esm.sh/react-router-dom';
 import { useAuth } from '../contexts/AuthContext.js';
 import Spinner from './Spinner.js';
-import { User } from '../types.js';
 
-interface ProtectedRouteProps {
-  children: React.ReactElement;
-  allowedRoles?: User['role'][];
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+const ProtectedRoute = ({ children, allowedRoles = undefined }) => {
   const { user, loading } = useAuth();
 
   if (loading) {

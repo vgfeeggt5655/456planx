@@ -1,10 +1,7 @@
+
 import React from 'react';
 
-interface SpinnerProps {
-    text?: string;
-}
-
-const Spinner: React.FC<SpinnerProps> = ({ text = 'Loading...' }) => {
+const Spinner = ({ text = 'Loading...' }) => {
   // If text is an empty string, render a compact version for buttons
   const isCompact = text === '';
 

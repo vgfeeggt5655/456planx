@@ -4,13 +4,13 @@ import { NavLink, useNavigate, Link } from 'https://esm.sh/react-router-dom';
 import { useAuth } from '../contexts/AuthContext.js';
 import { LogoutIcon, TachometerIcon, UserCircleIcon, ChevronDownIcon, MenuIcon, XIcon } from './Icons.js';
 
-const Header: React.FC = () => {
+const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false); // State for mobile menu
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLElement>(null);
+  const dropdownRef = useRef(null);
+  const headerRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -19,8 +19,8 @@ const Header: React.FC = () => {
   
   // Close dropdown/menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event) => {
+      if (headerRef.current && !headerRef.current.contains(event.target)) {
         setDropdownOpen(false);
         setMenuOpen(false);
       }

@@ -13,7 +13,7 @@ const AVATARS = [
     'https://i.pinimg.com/736x/1f/25/f5/1f25f5903952a2dbca09050725ebae35.jpg',
 ];
 
-const SignupPage: React.FC = () => {
+const SignupPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,10 +21,10 @@ const SignupPage: React.FC = () => {
   const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[0]);
   const { signup } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
       setError("Full Name is required.");
@@ -46,7 +46,7 @@ const SignupPage: React.FC = () => {
       await signup(formattedName, email, password, selectedAvatar);
       alert('Signup successful! Please log in.');
       navigate('/login');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
     } finally {
