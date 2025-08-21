@@ -1,0 +1,82 @@
+
+import React, { useEffect } from 'react';
+import { HashRouter, Routes, Route, Outlet } from 'https://esm.sh/react-router-dom';
+import Header from './components/Header.js';
+import HomePage from './pages/HomePage.js';
+import LoginPage from './pages/LoginPage.js';
+import SignupPage from './pages/SignupPage.js';
+import AdminDashboardPage from './pages/AdminDashboardPage.js';
+import WatchPage from './pages/WatchPage.js';
+import ProfilePage from './pages/ProfilePage.js';
+import ProtectedRoute from './components/ProtectedRoute.js';
+import { AuthProvider } from './contexts/AuthContext.js';
+
+const ProtectedLayout = () => (
+  <div className="min-h-screen flex flex-col">
+    <Header />
+    <main className="flex-grow">
+      <Outlet />
+    </main>
+  </div>
+);
+
+const App = () => {
+  useEffect(() => {
+    const handleContextMenu = (event) => {
+      event.preventDefault();
+    };
+
+    const handleDragStart = (event) => {
+      // Prevent dragging of images, links, and videos, which can reveal source URLs
+      // when dropped into a new tab or window.
+      if (
+        event.target instanceof HTMLImageElement ||
+        event.target instanceof HTMLAnchorElement ||
+        event.target instanceof HTMLVideoElement
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('dragstart', handleDragStart);
+    
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('dragstart', handleDragStart);
+    };
+  }, []);
+
+  return (
+    <AuthProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <ProtectedLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<HomePage />} />
+            <Route path="watch/:resourceId" element={<WatchPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+             <Route 
+              path="admin" 
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'super_admin']}>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+          </Route>
+        </Routes>
+      </HashRouter>
+    </AuthProvider>
+  );
+};
+
+export default App;
